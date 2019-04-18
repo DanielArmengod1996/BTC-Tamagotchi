@@ -32,31 +32,48 @@ app.get('/hungry', function(req, res) {
 });
 app.get('/life', function(req, res) {
     var resp = tama.life;
-    console.log(tama.hungry);
+    console.log(tama.life);
     res.send( JSON.stringify(resp));
 });
 app.get('/happiness', function(req, res) {
     var resp = tama.happiness;
-    console.log(tama.hungry);
+    console.log(tama.happiness);
     res.send( JSON.stringify(resp));
 });
 app.get('/sleepness', function(req, res) {
     var resp = tama.sleepness;
-    console.log(tama.hungry);
+    console.log(tama.sleepness);
     res.send( JSON.stringify(resp));
 });
 
-app.get('/updateStatus', function(req, res){
-    var rightNow = new Date().getMilliseconds();
-    
-    if( rightNow - lastChecked > 60000 ){
-        //TODO: some logical shit do in that condition
 
+function updateStatus(){
+    //main status changed
+    tama.hungry     = ( tama.hungry < 100 ) ? tama.hungry += 10 : tama.hungry;
+    tama.happiness  = ( tama.happiness > 0 ) ? tama.happiness -= 10 : tama.happiness;
+    tama.sleepness  = ( tama.sleepness < 100 ) ? tama.sleepness += 10 : tama.sleepness;
+    
+    //life dependencies logics
+    tama.life = tama.hungry == 100 && tama.life > 0 ? tama.life -= 10 : tama.life;
+    tama.life = tama.happiness == 0 && tama.life > 0 ? tama.life -= 10 : tama.life;
+    tama.life = tama.sleepness == 100 && tama.life > 0 ? tama.life -= 10 : tama.life;
+    
+
+    console.log('hungry :: ' + tama.hungry );
+    console.log('happiness :: ' + tama.happiness );
+    console.log('sleepness :: ' + tama.sleepness );
+    console.log('life :: ' + tama.life );
+
+    //check life status
+    if( tama.life == 0 ){
+        //matar a tamagotchi
+        console.log('estoy muerto');
     }
-});
+}
 
 const port = process.env.PORT || 3000;
 app.listen(port, ()=>{
-    console.log('Listening on ${port}');
+    console.log('Listening on : ' + port );
     tama = new Tamagotchi( 0, 100, 100, 0 );
+    setInterval( updateStatus, 10000);
 });
