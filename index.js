@@ -20,33 +20,72 @@ var lastChecked = new Date().getMilliseconds;
 const express = require('express');
 const app = express();
 
+/**
+ * @description function that
+ * @method GET
+ */
 app.get('/info', function(req, res) {
     var resp = 'Welcome to the tamagotchi time..., that are the commands...: /hungry, /life, /happiness and /sleepness';
     res.send( JSON.stringify(resp));
 });
 
+/**
+ * @description function that gets hungry value
+ * @method GET
+ */
 app.get('/hungry', function(req, res) {
     var resp = tama.hungry;
     console.log(tama.hungry);
     res.send( JSON.stringify(resp));
 });
+
+/**
+ * @description function that gets life value
+ * @method GET
+ */
 app.get('/life', function(req, res) {
     var resp = tama.life;
     console.log(tama.life);
     res.send( JSON.stringify(resp));
 });
+
+/**
+ * @description function that gets happiness value
+ * @method GET
+ */
 app.get('/happiness', function(req, res) {
     var resp = tama.happiness;
     console.log(tama.happiness);
     res.send( JSON.stringify(resp));
 });
+
+/**
+ * @description function that gets sleepness value
+ * @method GET
+ */
 app.get('/sleepness', function(req, res) {
     var resp = tama.sleepness;
     console.log(tama.sleepness);
     res.send( JSON.stringify(resp));
 });
 
+/**
+ * @description function that comprobes that the tamagotchi is alive
+ * @method GET
+ */
+app.get('/isAlive', function(){
+    var resp = true;
+    if( tama.life == 0 ){
+        resp = false;
+    }
 
+    res.send(JSON.stringify(resp));
+});
+
+
+/**
+ * @description method that is executed by n seconds/minues/hours, and updates hungry, happiness, sleepness and life values
+ */
 function updateStatus(){
     //main status changed
     tama.hungry     = ( tama.hungry < 100 ) ? tama.hungry += 10 : tama.hungry;
