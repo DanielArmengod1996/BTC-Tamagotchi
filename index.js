@@ -21,66 +21,25 @@ const express = require('express');
 const app = express();
 
 /**
- * @description function that
- * @method GET
+ * @description vamos a añadir hambruna
  */
-app.get('/info', function(req, res) {
-    var resp = 'Welcome to the tamagotchi time..., that are the commands...: /hungry, /life, /happiness and /sleepness';
-    res.send( JSON.stringify(resp));
-});
+function feed(){
+    tama.hungry -= ( tama.hungry > 0 ) ? 10 : 0;
+}
 
 /**
- * @description function that gets hungry value
- * @method GET
+ * @description 
  */
-app.get('/hungry', function(req, res) {
-    var resp = tama.hungry;
-    console.log(tama.hungry);
-    res.send( JSON.stringify(resp));
-});
+function sleep(){
+    tama.sleepness -= ( tama.sleepness > 0 ) ? 10 : 0;
+}
 
 /**
- * @description function that gets life value
- * @method GET
+ * @description 
  */
-app.get('/life', function(req, res) {
-    var resp = tama.life;
-    console.log(tama.life);
-    res.send( JSON.stringify(resp));
-});
-
-/**
- * @description function that gets happiness value
- * @method GET
- */
-app.get('/happiness', function(req, res) {
-    var resp = tama.happiness;
-    console.log(tama.happiness);
-    res.send( JSON.stringify(resp));
-});
-
-/**
- * @description function that gets sleepness value
- * @method GET
- */
-app.get('/sleepness', function(req, res) {
-    var resp = tama.sleepness;
-    console.log(tama.sleepness);
-    res.send( JSON.stringify(resp));
-});
-
-/**
- * @description function that comprobes that the tamagotchi is alive
- * @method GET
- */
-app.get('/isAlive', function(){
-    var resp = true;
-    if( tama.life == 0 ){
-        resp = false;
-    }
-
-    res.send(JSON.stringify(resp));
-});
+function play(){
+    tama.happiness += ( tama.happiness < 0 ) ? 10 : 0;
+}
 
 
 /**
