@@ -14,79 +14,58 @@ class Tamagotchi{
         this.sleepness = sleepness;
     }
 }
-var tama;
-var lastChecked = new Date().getMilliseconds;
 
-const express = require('express');
-const app = express();
+// url bot
+var urlBot = 'https://api.telegram.org/bot744288029:AAHikTZ2Esa_wejAvdHp0OkMNSwjOxRc6m8';
+
+var tama = new Tamagotchi(0, 100, 100, 0);
+
+var http = require('http');
+
+
+// start the loop for the telegram api
+setInterval( updateStatus, 2000);
 
 /**
  * @description function that
  * @method GET
  */
-app.get('/info', function(req, res) {
+function info() {
     var resp = 'Welcome to the tamagotchi time..., that are the commands...: /hungry, /life, /happiness and /sleepness';
-    res.send( JSON.stringify(resp));
-});
+}
 
 /**
- * @description function that gets hungry value
- * @method GET
+ * @description function feed, minus the hungry level
  */
-app.get('/hungry', function(req, res) {
-    var resp = tama.hungry;
-    console.log(tama.hungry);
-    res.send( JSON.stringify(resp));
-});
+function feed(){
+    tama.hungry -= 10;
+}
 
-/**
- * @description function that gets life value
- * @method GET
+ /**
+ * @description function play, add happines to the tamagotchi
  */
-app.get('/life', function(req, res) {
-    var resp = tama.life;
-    console.log(tama.life);
-    res.send( JSON.stringify(resp));
-});
+function play(){
+    tama.happiness += 10;
+}
 
-/**
- * @description function that gets happiness value
- * @method GET
+ /**
+ * @description function sleep, minus the sleep level from the tamagotchi
  */
-app.get('/happiness', function(req, res) {
-    var resp = tama.happiness;
-    console.log(tama.happiness);
-    res.send( JSON.stringify(resp));
-});
-
-/**
- * @description function that gets sleepness value
- * @method GET
- */
-app.get('/sleepness', function(req, res) {
-    var resp = tama.sleepness;
-    console.log(tama.sleepness);
-    res.send( JSON.stringify(resp));
-});
-
-/**
- * @description function that comprobes that the tamagotchi is alive
- * @method GET
- */
-app.get('/isAlive', function(){
-    var resp = true;
-    if( tama.life == 0 ){
-        resp = false;
-    }
-
-    res.send(JSON.stringify(resp));
-});
+function sleep(){
+    tama.sleepness -= 10;
+}
 
 
 /**
  * @description method that is executed by n seconds/minues/hours, and updates hungry, happiness, sleepness and life values
  */
 function updateStatus(){
+
+    console.log('hungry :: '    + tama.hungry );
+    console.log('happiness :: ' + tama.happiness );
+    console.log('sleepness :: ' + tama.sleepness );
+    console.log('life :: '      + tama.life );
+
     //main status changed
     tama.hungry     = ( tama.hungry < 100 ) ? tama.hungry += 10 : tama.hungry;
     tama.happiness  = ( tama.happiness > 0 ) ? tama.happiness -= 10 : tama.happiness;
@@ -98,21 +77,24 @@ function updateStatus(){
     tama.life = tama.sleepness == 100 && tama.life > 0 ? tama.life -= 10 : tama.life;
     
 
-    console.log('hungry :: ' + tama.hungry );
+    console.log('hungry :: '    + tama.hungry );
     console.log('happiness :: ' + tama.happiness );
     console.log('sleepness :: ' + tama.sleepness );
-    console.log('life :: ' + tama.life );
+    console.log('life :: '      + tama.life );
 
     //check life status
     if( tama.life == 0 ){
-        //matar a tamagotchi
         console.log('estoy muerto');
     }
+    
 }
 
-const port = process.env.PORT || 3000;
-app.listen(port, ()=>{
-    console.log('Listening on : ' + port );
-    tama = new Tamagotchi( 0, 100, 100, 0 );
-    setInterval( updateStatus, 10000);
-});
+http.request(options, function(res){
+    console.log('STATUS: ' + res.statusCode );
+    console.log('HEADERS: ' + JSON.stringify(res.headers) );
+    res.setEncoding('utf8');
+
+    res.on('data', function(chunk){
+        console.log('BODY CALLOUT' + chunk);
+    });
+}).end();
