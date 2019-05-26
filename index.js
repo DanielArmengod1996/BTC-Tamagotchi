@@ -20,7 +20,7 @@ var urlBot = 'https://api.telegram.org/bot744288029:AAHikTZ2Esa_wejAvdHp0OkMNSwj
 
 var tama = new Tamagotchi(0, 100, 100, 0);
 
-var http = require('http');
+var https = require('https');
 
 
 // start the loop for the telegram api
@@ -61,10 +61,10 @@ function sleep(){
  */
 function updateStatus(){
 
-    console.log('hungry :: '    + tama.hungry );
-    console.log('happiness :: ' + tama.happiness );
-    console.log('sleepness :: ' + tama.sleepness );
-    console.log('life :: '      + tama.life );
+    // get the last message from the bot of telegram
+    getResponseFromServer();
+    // print in console the status from the tamagotchi
+    logTamaStatus();
 
     //main status changed
     tama.hungry     = ( tama.hungry < 100 ) ? tama.hungry += 10 : tama.hungry;
@@ -75,26 +75,40 @@ function updateStatus(){
     tama.life = tama.hungry == 100 && tama.life > 0 ? tama.life -= 10 : tama.life;
     tama.life = tama.happiness == 0 && tama.life > 0 ? tama.life -= 10 : tama.life;
     tama.life = tama.sleepness == 100 && tama.life > 0 ? tama.life -= 10 : tama.life;
-    
 
+    logTamaStatus();
+
+    //check life status
+    if( tama.life == 0 ){
+        // dead tatmagotcho
+    }
+    
+}
+/**
+ * @description Query call to get the bot status
+*/
+function getResponseFromServer(){
+    https.get(urlBot, (resp) => {
+    
+        let data = '';
+    
+        resp.on( 'data', (chunck) => {
+            data += chunck;
+        });
+    
+        resp.on( 'end', () => {
+            console.log( 'INFO RESPUESTA SERVIDOR : ' + data );
+            // se va a deserializar y recoger el comando de dicho bot
+        });
+    
+    }).on('error', (err) => {
+        console.log( 'Error : ' + err.message );
+    });
+}
+
+function logTamaStatus(){
     console.log('hungry :: '    + tama.hungry );
     console.log('happiness :: ' + tama.happiness );
     console.log('sleepness :: ' + tama.sleepness );
     console.log('life :: '      + tama.life );
-
-    //check life status
-    if( tama.life == 0 ){
-        console.log('estoy muerto');
-    }
-    
 }
-
-http.request(options, function(res){
-    console.log('STATUS: ' + res.statusCode );
-    console.log('HEADERS: ' + JSON.stringify(res.headers) );
-    res.setEncoding('utf8');
-
-    res.on('data', function(chunk){
-        console.log('BODY CALLOUT' + chunk);
-    });
-}).end();
